@@ -10,6 +10,8 @@ import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Categories from '../pages/Categories';
 import Products from '../pages/Products';
+import Inventory from '../pages/Inventory';
+import POS from '../pages/POS';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();
@@ -21,19 +23,27 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/staff" element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><AdminLayout /></PrivateRoute>}>
-        <Route index element={<Dashboard />} />
-        <Route path="categories" element={<PrivateRoute allowedRoles={['Admin']}><Categories /></PrivateRoute>} />
-        <Route path="products" element={<PrivateRoute allowedRoles={['Admin']}><Products /></PrivateRoute>} />
+      
+      {/* Layout wrapper for authenticated routes */}
+      <Route element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><AdminLayout /></PrivateRoute>}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/categories" element={<PrivateRoute allowedRoles={['Admin']}><Categories /></PrivateRoute>} />
+        <Route path="/products" element={<PrivateRoute allowedRoles={['Admin']}><Products /></PrivateRoute>} />
+        <Route path="/inventory" element={<PrivateRoute allowedRoles={['Admin']}><Inventory /></PrivateRoute>} />
+        <Route path="/pos" element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><POS /></PrivateRoute>} />
       </Route>
 
+      {/* Redirects */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/staff" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/admin" element={<Navigate to="/dashboard" replace />} />
+
       {/* Unauthorized Fallback */}
-      <Route path="/unauthorized" element={<div className="flex h-screen items-center justify-center text-2xl">Unauthorized Access</div>} />
+      <Route path="/unauthorized" element={<div className="flex h-screen items-center justify-center text-2xl text-white bg-[#1B2A4A]">Unauthorized Access</div>} />
       
       {/* Catch-all 404 Route */}
-      <Route path="*" element={<div className="flex h-screen items-center justify-center text-2xl">404 - Page Not Found</div>} />
+      <Route path="*" element={<div className="flex h-screen items-center justify-center text-2xl text-white bg-[#1B2A4A]">404 - Page Not Found</div>} />
     </Routes>
   );
 };

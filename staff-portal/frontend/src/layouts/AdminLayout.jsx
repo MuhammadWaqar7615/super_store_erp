@@ -23,11 +23,13 @@ const AdminLayout = () => {
       <aside className="w-64 bg-gray-800 text-white flex flex-col">
         <div className="p-4 text-xl font-bold border-b border-gray-700">ERP System</div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link to="/admin" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Dashboard</Link>
+          <Link to="/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Dashboard</Link>
+          <Link to="/pos" className="block py-2 px-4 rounded hover:bg-gray-700 transition">POS</Link>
           {user?.role === 'Admin' && (
             <>
-              <Link to="/admin/categories" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Categories</Link>
-              <Link to="/admin/products" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Products</Link>
+              <Link to="/categories" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Categories</Link>
+              <Link to="/products" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Products</Link>
+              <Link to="/inventory" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Inventory</Link>
             </>
           )}
         </nav>

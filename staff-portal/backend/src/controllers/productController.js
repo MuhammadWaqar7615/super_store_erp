@@ -30,7 +30,11 @@ const getProductById = async (req, res) => {
 // @access  Private (Admin only)
 const createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const productData = { ...req.body };
+    if (req.file) {
+      productData.image = req.file.path;
+    }
+    const product = new Product(productData);
     const createdProduct = await product.save();
     res.status(201).json({ success: true, data: createdProduct });
   } catch (error) {
@@ -43,7 +47,11 @@ const createProduct = async (req, res) => {
 // @access  Private (Admin only)
 const updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const productData = { ...req.body };
+    if (req.file) {
+      productData.image = req.file.path;
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, { new: true, runValidators: true });
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     res.json({ success: true, data: product });
   } catch (error) {

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import CategoryTable from '../components/categories/CategoryTable';
+import CategoryFormModal from '../components/categories/CategoryFormModal';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -11,6 +15,7 @@ const Categories = () => {
 
   const fetchCategories = async () => {
     try {
+      setLoading(true);
       const { data } = await api.get('/categories');
       setCategories(data.data);
     } catch (error) {
@@ -20,45 +25,60 @@ const Categories = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      try {
+        await api.delete(`/categories/${id}`);
+        fetchCategories(); // Refresh list
+      } catch (error) {
+        console.error('Failed to delete category:', error);
+        alert('Failed to delete category. It might be in use.');
+      }
+    }
+  };
+
+  const handleEdit = (category) => {
+    setCategoryToEdit(category);
+    setIsModalOpen(true);
+  };
+
+  const openAddModal = () => {
+    setCategoryToEdit(null);
+    setIsModalOpen(true);
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow transition">
-          + Add Category
+    <div className="min-h-[calc(100vh-64px)] bg-[#1B2A4A] p-8 -m-6" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Categories</h1>
+          <p className="text-gray-400 mt-2">Manage product categories</p>
+        </div>
+        <button 
+          onClick={openAddModal}
+          className="bg-[#E8446A] hover:bg-[#d4375b] text-white px-6 py-3 rounded-xl shadow-[0_0_15px_rgba(232,68,106,0.4)] transition-all font-medium flex items-center"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+          Add Category
         </button>
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="h-64 rounded-2xl bg-white/5 border border-white/10 animate-pulse"></div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {categories.map((category) => (
-                <tr key={category._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-4">Edit</button>
-                    <button className="text-red-600 hover:text-red-900">Delete</button>
-                  </td>
-                </tr>
-              ))}
-              {categories.length === 0 && (
-                <tr>
-                  <td colSpan="2" className="px-6 py-4 text-center text-sm text-gray-500">No categories found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <CategoryTable 
+          categories={categories} 
+          onEdit={handleEdit} 
+          onDelete={handleDelete} 
+        />
       )}
+
+      <CategoryFormModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchCategories}
+        categoryToEdit={categoryToEdit}
+      />
     </div>
   );
 };
