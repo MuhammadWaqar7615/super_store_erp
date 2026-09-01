@@ -36,12 +36,8 @@ lerna-debug.log*
 # Environment Variables
 # =========================
 .env
-.env.test
-.env.production
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
 
 # =========================
 # Build & Output (Frontend)
