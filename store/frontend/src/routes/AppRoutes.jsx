@@ -7,6 +7,7 @@ import CustomerLayout from '../layouts/CustomerLayout';
 
 // Pages
 import CustomerAuth from '../pages/customer/CustomerAuth';
+import Home from '../pages/customer/Home';
 
 const CustomerRoute = ({ children }) => {
   const { user } = useAuth();
@@ -20,7 +21,7 @@ const AppRoutes = () => {
       {/* Customer Routes */}
       <Route path="/auth" element={<CustomerAuth />} />
       <Route path="/" element={<CustomerRoute><CustomerLayout /></CustomerRoute>}>
-        <Route index element={<div className="p-6">Store</div>} />
+        <Route index element={<Home />} />
       </Route>
 
       {/* Catch-all 404 Route */}
