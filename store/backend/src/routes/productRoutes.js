@@ -5,11 +5,11 @@ const { protect } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 
 router.route('/')
-  .get(protect, getProducts)
+  .get(getProducts)
   .post(protect, authorizeRoles('Admin'), createProduct);
 
 router.route('/:id')
-  .get(protect, getProductById)
+  .get(getProductById)
   .put(protect, authorizeRoles('Admin'), updateProduct)
   .delete(protect, authorizeRoles('Admin'), deleteProduct);
 

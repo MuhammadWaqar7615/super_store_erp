@@ -25,6 +25,7 @@ const AdminLayout = () => {
         <nav className="flex-1 p-4 space-y-2">
           <Link to="/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Dashboard</Link>
           <Link to="/pos" className="block py-2 px-4 rounded hover:bg-gray-700 transition">POS</Link>
+          <Link to="/receipts" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Receipts</Link>
           {user?.role === 'Admin' && (
             <>
               <Link to="/categories" className="block py-2 px-4 rounded hover:bg-gray-700 transition">Categories</Link>

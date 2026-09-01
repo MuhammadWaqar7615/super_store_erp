@@ -65,9 +65,9 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, productToEdit }) => {
       }
 
       if (productToEdit) {
-        await api.put(`/products/${productToEdit._id}`, data, { headers: { 'Content-Type': 'multipart/form-data' }});
+        await api.put(`/products/${productToEdit._id}`, data);
       } else {
-        await api.post('/products', data, { headers: { 'Content-Type': 'multipart/form-data' }});
+        await api.post('/products', data);
       }
       onSuccess();
       onClose();

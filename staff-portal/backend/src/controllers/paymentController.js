@@ -13,7 +13,7 @@ const createPaymentIntent = async (req, res) => {
     res.json({ success: true, data: { clientSecret: paymentIntent.client_secret } });
   } catch (error) {
     console.error('Stripe error:', error.message);
-    res.status(500).json({ success: false, message: 'Failed to create payment intent' });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 

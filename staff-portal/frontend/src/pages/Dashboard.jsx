@@ -5,6 +5,7 @@ import LowStockAlert from '../components/dashboard/LowStockAlert';
 import { getDashboardMetrics } from '../services/reportService';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import CashierDashboard from '../components/dashboard/CashierDashboard';
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -14,11 +15,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Enforcement: Only Admin can view dashboard
+    // If Cashier, we don't need to fetch admin metrics here
+    if (user?.role === 'Cashier') {
+      return;
+    }
+
+    // Enforcement: Only Admin can view admin dashboard
     if (user?.role !== 'Admin') {
-      // In a real app we might redirect to POS
-      // navigate('/staff/pos');
-      // For now, we will just set an unauthorized error since we don't have POS yet
       setError('Unauthorized access. Only Admins can view the dashboard.');
       setLoading(false);
       return;
@@ -39,6 +42,10 @@ const Dashboard = () => {
 
     fetchMetrics();
   }, [user, navigate]);
+
+  if (user?.role === 'Cashier') {
+    return <CashierDashboard />;
+  }
 
   if (loading) {
     return (

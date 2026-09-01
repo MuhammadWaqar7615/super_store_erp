@@ -88,6 +88,63 @@ const getDashboardMetrics = async (req, res) => {
   }
 };
 
+const getCashierDashboardMetrics = async (req, res) => {
+  try {
+    const cashierId = req.user._id;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // 1. Sales & Orders Aggregation for Cashier (Today)
+    const salesData = await Sale.aggregate([
+      { 
+        $match: { 
+          cashierId: cashierId,
+          createdAt: { $gte: today } 
+        } 
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$total" },
+          totalOrders: { $sum: 1 },
+          itemsSold: {
+             $sum: { $sum: "$items.quantity" }
+          }
+        }
+      }
+    ]);
+
+    const totalSales = salesData.length > 0 ? salesData[0].totalRevenue : 0;
+    const totalOrders = salesData.length > 0 ? salesData[0].totalOrders : 0;
+    const itemsSold = salesData.length > 0 ? salesData[0].itemsSold : 0;
+
+    // 2. Recent Activity (Latest 5 Sales by Cashier)
+    const recentSales = await Sale.find({ cashierId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate('customerId', 'name')
+      .populate('cashierId', 'name');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        metrics: {
+          totalSales,
+          totalOrders,
+          itemsSold
+        },
+        recentSales
+      }
+    });
+
+  } catch (error) {
+    console.error('Cashier Dashboard Metrics Error:', error);
+    res.status(500).json({ success: false, message: 'Server Error fetching cashier metrics' });
+  }
+};
+
 module.exports = {
-  getDashboardMetrics
+  getDashboardMetrics,
+  getCashierDashboardMetrics
 };

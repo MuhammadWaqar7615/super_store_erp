@@ -42,22 +42,50 @@ const validateCart = async (req, res) => {
 
 const createSale = async (req, res) => {
   try {
-    const { items, customerId, subtotal, total, paymentStatus } = req.body;
+    const { items, customerId, paymentStatus, stripePaymentIntentId } = req.body;
+
+    let subtotal = 0;
+    const validatedItems = [];
+
+    // First validate and prepare items, calculate subtotal
+    for (let item of items) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: `Product not found` });
+      }
+      
+      const itemTotal = product.sellingPrice * item.quantity;
+      subtotal += itemTotal;
+
+      validatedItems.push({
+        productId: product._id,
+        productName: product.name,
+        quantity: item.quantity,
+        unitPrice: product.sellingPrice,
+        purchaseCost: product.purchasePrice,
+        total: itemTotal,
+        // keep reference to product for stock update
+        productDoc: product
+      });
+    }
 
     const sale = new Sale({
       invoiceNumber: `INV-${Date.now()}`,
       customerId,
       cashierId: req.user._id,
       channel: 'pos',
-      items,
+      items: validatedItems.map(({ productDoc, ...rest }) => rest), // remove productDoc before saving
       subtotal,
-      total,
-      paymentStatus
+      total: subtotal,
+      paymentStatus,
+      // store stripe intent if needed, though schema doesn't currently have it
     });
 
-    // Update stock and create movements
-    for (let item of items) {
-      const product = await Product.findById(item.productId);
+    await sale.save();
+
+    // Now update stock and create movements
+    for (let item of validatedItems) {
+      const product = item.productDoc;
       const previousStock = product.stockQuantity;
       product.stockQuantity -= item.quantity;
       await product.save();
@@ -75,9 +103,9 @@ const createSale = async (req, res) => {
       });
     }
 
-    await sale.save();
     res.status(201).json({ success: true, data: sale });
   } catch (error) {
+    console.error('Create Sale Error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

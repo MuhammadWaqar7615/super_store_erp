@@ -12,6 +12,7 @@ import Categories from '../pages/Categories';
 import Products from '../pages/Products';
 import Inventory from '../pages/Inventory';
 import POS from '../pages/POS';
+import Receipts from '../pages/Receipts';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const AppRoutes = () => {
         <Route path="/products" element={<PrivateRoute allowedRoles={['Admin']}><Products /></PrivateRoute>} />
         <Route path="/inventory" element={<PrivateRoute allowedRoles={['Admin']}><Inventory /></PrivateRoute>} />
         <Route path="/pos" element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><POS /></PrivateRoute>} />
+        <Route path="/receipts" element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><Receipts /></PrivateRoute>} />
       </Route>
 
       {/* Redirects */}

@@ -35,7 +35,8 @@ const CheckoutForm = ({ amount, onPaymentSuccess, onCancel }) => {
         onPaymentSuccess('STRIPE', payload.paymentIntent.id);
       }
     } catch (err) {
-      setError('An error occurred during payment processing.');
+      const errorMessage = err.response?.data?.message || 'An error occurred during payment processing.';
+      setError(errorMessage);
       setProcessing(false);
     }
   };
@@ -81,7 +82,7 @@ const POSPaymentModal = ({ isOpen, onClose, amount, cart, customer, onSuccess })
         customerId: customer?._id || null,
         subtotal: amount,
         total: amount,
-        paymentStatus: 'PAID'
+        paymentStatus: 'paid'
       };
 
       const { data } = await api.post('/sales', payload);
@@ -105,7 +106,7 @@ const POSPaymentModal = ({ isOpen, onClose, amount, cart, customer, onSuccess })
         customerId: customer?._id || null,
         subtotal: amount,
         total: amount,
-        paymentStatus: 'PAID',
+        paymentStatus: 'paid',
         stripePaymentIntentId
       };
 
