@@ -1,4 +1,4 @@
-const app = require('../src/app');
+const app = require('../backend/src/app');
 const mongoose = require('mongoose');
 
 // Cache MongoDB connection (prevents multiple connections in serverless)
