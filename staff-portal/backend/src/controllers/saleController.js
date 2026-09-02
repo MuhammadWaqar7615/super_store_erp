@@ -42,7 +42,7 @@ const validateCart = async (req, res) => {
 
 const createSale = async (req, res) => {
   try {
-    const { items, customerId, paymentStatus, stripePaymentIntentId } = req.body;
+    const { items, customerId, walkInCustomerName, walkInCustomerPhone, paymentStatus, stripePaymentIntentId } = req.body;
 
     let subtotal = 0;
     const validatedItems = [];
@@ -53,7 +53,7 @@ const createSale = async (req, res) => {
       if (!product) {
         return res.status(404).json({ success: false, message: `Product not found` });
       }
-      
+
       const itemTotal = product.sellingPrice * item.quantity;
       subtotal += itemTotal;
 
@@ -72,6 +72,8 @@ const createSale = async (req, res) => {
     const sale = new Sale({
       invoiceNumber: `INV-${Date.now()}`,
       customerId,
+      walkInCustomerName,
+      walkInCustomerPhone,
       cashierId: req.user._id,
       channel: 'pos',
       items: validatedItems.map(({ productDoc, ...rest }) => rest), // remove productDoc before saving

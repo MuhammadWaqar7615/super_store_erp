@@ -22,6 +22,7 @@ app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/inventory', require('./routes/inventoryRoutes'));
 app.use('/api/sales', require('./routes/saleRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
 // 404 handler
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: 'Route not found' });

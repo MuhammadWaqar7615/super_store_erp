@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 const saleSchema = new mongoose.Schema({
   invoiceNumber: { type: String, required: true },
-  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' }, // null for walk-ins
+  walkInCustomerName: { type: String }, // For walk-ins
+  walkInCustomerPhone: { type: String }, // For walk-ins
   cashierId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   cartId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' },
   channel: { type: String, enum: ['pos', 'self-checkout'], required: true },

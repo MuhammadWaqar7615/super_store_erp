@@ -1,45 +1,50 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('customerToken'));
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchMe();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
+  }, [token]);
 
-    // Listen to global auth errors from api.js interceptor
-    const handleAuthError = () => {
-      setUser(null);
-    };
-    window.addEventListener('auth-error', handleAuthError);
-    return () => window.removeEventListener('auth-error', handleAuthError);
-  }, []);
+  const fetchMe = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/customer-auth/me`);
+      setCustomer(res.data.customer);
+    } catch (error) {
+      console.error('Error fetching customer profile', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const login = (userData, token) => {
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', token);
-    setUser(userData);
+  const login = (newToken, customerData) => {
+    localStorage.setItem('customerToken', newToken);
+    setToken(newToken);
+    setCustomer(customerData);
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
+    localStorage.removeItem('customerToken');
+    setToken(null);
+    setCustomer(null);
+    delete axios.defaults.headers.common['Authorization'];
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ customer, loading, login, logout, token }}>
       {children}
     </AuthContext.Provider>
   );

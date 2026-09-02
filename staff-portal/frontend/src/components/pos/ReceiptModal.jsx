@@ -59,7 +59,13 @@ const ReceiptModal = ({ sale, onClose }) => {
           <div>
             <p><strong>Date:</strong> {new Date(sale.createdAt).toLocaleString()}</p>
             <p><strong>Invoice #:</strong> {sale.invoiceNumber}</p>
-            {sale.customer && <p><strong>Customer:</strong> {sale.customer.name}</p>}
+            {sale.customerId ? (
+              <p><strong>Customer:</strong> {sale.customerId.name}</p>
+            ) : sale.walkInCustomerName ? (
+              <p><strong>Customer:</strong> {sale.walkInCustomerName} (Walk-in)</p>
+            ) : (
+              <p><strong>Customer:</strong> Walk-in Customer</p>
+            )}
             <p><strong>Cashier:</strong> {sale.cashierId?.name || 'Staff'}</p>
           </div>
 

@@ -1,11 +1,13 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPOS = location.pathname === '/pos';
 
   const handleLogout = async () => {
     try {
@@ -40,7 +42,7 @@ const AdminLayout = () => {
           <button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded transition">Logout</button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto p-8">
+      <main className={`flex-1 overflow-auto ${isPOS ? 'p-0' : 'p-8'}`}>
         <Outlet />
       </main>
     </div>

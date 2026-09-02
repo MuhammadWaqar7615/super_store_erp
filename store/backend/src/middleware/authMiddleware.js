@@ -11,15 +11,18 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
 
       // Check if it's an Admin/Cashier (User) or Customer
-      if (decoded.role) {
-        req.user = await User.findById(decoded.id).select('-password');
+      if (decoded.role === 'customer') {
+        req.user = await Customer.findById(decoded.customerId || decoded.id).select('-password');
       } else {
-        req.user = await Customer.findById(decoded.id).select('-password');
+        req.user = await User.findById(decoded.id).select('-password');
       }
 
       if (!req.user) {
         return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
       }
+
+      // Alias for controllers that expect req.customer
+      req.customer = req.user;
 
       next();
     } catch (error) {

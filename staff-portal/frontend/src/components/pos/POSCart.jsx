@@ -1,77 +1,87 @@
 import React from 'react';
+import { ShoppingBag, Minus, Plus, X, ChevronUp, ChevronDown } from 'lucide-react';
 
-const POSCart = ({ cart, onUpdateQuantity, onRemoveItem, subtotal }) => {
+const POSCart = ({ cart, onUpdateQuantity, onRemoveItem, isExpanded = true, onToggleExpand }) => {
   return (
-    <div className="flex flex-col h-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex-1 overflow-hidden">
-      <div className="p-4 border-b border-white/10 bg-white/5">
-        <h2 className="text-lg font-bold text-white flex items-center">
-          <svg className="w-5 h-5 mr-2 text-[#E8446A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <div className="flex flex-col h-full bg-white rounded-[8px] border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300">
+      <div 
+        className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors shrink-0"
+        onClick={onToggleExpand}
+      >
+        <h2 className="text-[16px] font-semibold text-slate-800 flex items-center">
+          <ShoppingBag className="w-5 h-5 mr-2 text-blue-600" />
           Current Order
         </h2>
+        <div className="flex items-center space-x-3">
+          <span className="bg-slate-200 text-slate-700 text-[12px] font-bold px-2 py-0.5 rounded-full">
+            {cart.length} {cart.length === 1 ? 'item' : 'items'}
+          </span>
+          {isExpanded ? (
+            <ChevronDown className="w-5 h-5 text-slate-500" />
+          ) : (
+            <ChevronUp className="w-5 h-5 text-slate-500" />
+          )}
+        </div>
       </div>
-      
-      <div className="flex-1 overflow-y-auto p-2">
-        {cart.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center opacity-50">
-            <p className="text-gray-400">Cart is empty</p>
-            <p className="text-xs text-gray-500 mt-1">Select products to add</p>
-          </div>
-        ) : (
-          <ul className="space-y-2">
+
+      {isExpanded && (
+        <div className="flex-1 overflow-y-auto p-4 bg-white">
+          {cart.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-60">
+              <ShoppingBag className="w-12 h-12 text-slate-300 mb-3" />
+              <p className="text-slate-600 text-[16px] font-medium">Your cart is empty</p>
+              <p className="text-slate-500 text-[14px] mt-1">Search for products to add</p>
+            </div>
+          ) : (
+          <ul className="space-y-3">
             {cart.map((item, index) => (
-              <li key={item.product._id || index} className="bg-white/5 border border-white/10 rounded-xl p-3 flex justify-between items-center group">
-                <div className="flex-1 mr-3">
-                  <h4 className="text-white text-sm font-medium line-clamp-1">{item.product.name}</h4>
-                  <p className="text-gray-400 text-xs">Rs. {item.product.sellingPrice} / {item.product.unit}</p>
+              <li key={item.product._id || index} className="group relative flex justify-between items-center p-3 rounded-[8px] border border-slate-100 bg-slate-50 hover:border-slate-300 hover:bg-slate-100 transition-colors">
+
+                <div className="flex-1 min-w-0 pr-4">
+                  <h4 className="text-slate-800 text-[14px] font-medium truncate" title={item.product.name}>
+                    {item.product.name}
+                  </h4>
+                  <p className="text-slate-500 text-[12px] mt-0.5">Rs. {item.product.sellingPrice} / {item.product.unit}</p>
                 </div>
-                
-                <div className="flex items-center space-x-3 bg-black/20 rounded-lg p-1">
-                  <button 
+
+                <div className="flex items-center space-x-1 bg-white border border-slate-200 rounded-md p-0.5 mr-4 shadow-sm">
+                  <button
                     onClick={() => onUpdateQuantity(item.product._id, item.quantity - 1)}
-                    className="w-7 h-7 flex items-center justify-center rounded-md bg-white/10 text-white hover:bg-[#E8446A] transition-colors"
+                    className="w-7 h-7 flex items-center justify-center rounded-[4px] text-slate-600 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                   >
-                    -
+                    <Minus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-white font-medium w-4 text-center text-sm">{item.quantity}</span>
-                  <button 
+                  <span className="text-slate-800 font-semibold w-6 text-center text-[14px] select-none">
+                    {item.quantity}
+                  </span>
+                  <button
                     onClick={() => onUpdateQuantity(item.product._id, item.quantity + 1)}
-                    className="w-7 h-7 flex items-center justify-center rounded-md bg-white/10 text-white hover:bg-[#E8446A] transition-colors"
+                    className="w-7 h-7 flex items-center justify-center rounded-[4px] text-slate-600 hover:bg-slate-100 hover:text-blue-600 transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                     disabled={item.quantity >= item.product.stockQuantity}
                   >
-                    +
+                    <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                
-                <div className="w-20 text-right ml-3">
-                  <p className="text-white font-bold text-sm">Rs. {item.product.sellingPrice * item.quantity}</p>
+
+                <div className="text-right w-24">
+                  <p className="text-slate-800 font-bold text-[14px]">
+                    Rs. {(item.product.sellingPrice * item.quantity).toLocaleString()}
+                  </p>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => onRemoveItem(item.product._id)}
-                  className="ml-2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors rounded-full hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
+                  className="absolute -right-2 -top-2 w-6 h-6 flex items-center justify-center text-slate-400 bg-white border border-slate-200 rounded-full hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                  title="Remove item"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </li>
             ))}
           </ul>
         )}
-      </div>
-
-      <div className="p-4 border-t border-white/10 bg-black/20 mt-auto">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-400">Subtotal</span>
-          <span className="text-white font-medium">Rs. {subtotal}</span>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-gray-400">Discount/Tax</span>
-          <span className="text-white font-medium">Rs. 0</span>
-        </div>
-        <div className="flex justify-between items-center pt-3 border-t border-white/10">
-          <span className="text-lg font-medium text-white">Total</span>
-          <span className="text-2xl font-bold text-[#E8446A]">Rs. {subtotal}</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

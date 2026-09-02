@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #2563eb;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
@@ -10,6 +17,6 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f3f4f6; /* light gray background */
-  color: #1f2937; /* dark text */
+  background-color: #f8fafc; /* slate-50 */
+  color: #1e293b; /* slate-800 */
 }

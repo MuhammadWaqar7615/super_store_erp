@@ -25,7 +25,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      
+
       {/* Layout wrapper for authenticated routes */}
       <Route element={<PrivateRoute allowedRoles={['Admin', 'Cashier']}><AdminLayout /></PrivateRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
@@ -43,7 +43,7 @@ const AppRoutes = () => {
 
       {/* Unauthorized Fallback */}
       <Route path="/unauthorized" element={<div className="flex h-screen items-center justify-center text-2xl text-white bg-[#1B2A4A]">Unauthorized Access</div>} />
-      
+
       {/* Catch-all 404 Route */}
       <Route path="*" element={<div className="flex h-screen items-center justify-center text-2xl text-white bg-[#1B2A4A]">404 - Page Not Found</div>} />
     </Routes>

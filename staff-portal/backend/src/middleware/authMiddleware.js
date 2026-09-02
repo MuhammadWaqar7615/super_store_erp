@@ -24,7 +24,7 @@ const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error('JWT Error:', error.message);
-      return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+      return res.status(401).json({ success: false, message: `Not authorized, token failed: ${error.message}` });
     }
   }
 

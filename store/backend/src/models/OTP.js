@@ -1,32 +1,15 @@
 const mongoose = require('mongoose');
 
 const otpSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true, // One OTP document per email
-  },
-  otp: {
-    type: String, // Storing hashed OTP
-    required: true,
-  },
-  attempts: {
-    type: Number,
-    default: 0,
-  },
-  requestCount: {
-    type: Number,
-    default: 1,
-  },
-  lastRequestedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  expiresAt: {
-    type: Date,
-    required: true,
-    index: { expires: 0 } // TTL index: automatically deletes document when expiresAt is reached
-  }
+  email: { type: String, required: true, unique: true },
+  otp: { type: String, required: true },
+  expiresAt: { type: Date, required: true }, // 15 minutes
+  attempts: { type: Number, default: 0 },
+  lastRequestedAt: Date,
+  requestCount: { type: Number, default: 0 } // Rate limiting
 }, { timestamps: true });
+
+// TTL Index
+otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('OTP', otpSchema);

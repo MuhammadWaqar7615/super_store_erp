@@ -3,7 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy
 const createPaymentIntent = async (req, res) => {
   try {
     const { amount } = req.body;
-    
+
     // Amount should be in smallest currency unit, e.g., cents. Assuming amount is in whole rupees, convert to paisa.
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
